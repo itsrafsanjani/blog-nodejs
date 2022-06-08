@@ -4,14 +4,18 @@
    "description": "Awesome project developed with TypeORM.",
    "type": "commonjs",
    "devDependencies": {
-      "ts-node": "10.7.0",
       "@types/node": "^16.11.10",
+      "@typescript-eslint/eslint-plugin": "^5.27.1",
+      "@typescript-eslint/parser": "^5.27.1",
+      "eslint": "^8.17.0",
+      "ts-node": "10.7.0",
       "typescript": "4.5.2"
    },
    "dependencies": {
-      "typeorm": "0.3.6",
+      "dotenv": "^16.0.1",
+      "mysql": "^2.14.1",
       "reflect-metadata": "^0.1.13",
-      "mysql": "^2.14.1"
+      "typeorm": "0.3.6"
    },
    "scripts": {
       "start": "ts-node src/index.ts",
