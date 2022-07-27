@@ -16,11 +16,12 @@
       "dotenv": "^16.0.1",
       "express": "^4.18.1",
       "mysql": "^2.14.1",
+      "nodemon": "^2.0.19",
       "reflect-metadata": "^0.1.13",
       "typeorm": "0.3.6"
    },
    "scripts": {
-      "start": "ts-node src/index.ts",
+      "start": "nodemon src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs"
    }
 }
