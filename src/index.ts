@@ -2,7 +2,6 @@ import { AppDataSource } from "./data-source";
 import { User } from "./entity/User";
 import * as express from "express";
 import { Request, Response } from "express";
-import { validate } from "class-validator";
 import UserController from "./controller/UserController";
 
 AppDataSource.initialize()
@@ -30,29 +29,9 @@ app.get("/", function (req: Request, res: Response) {
 // users.index
 app.get("/users", UserController.index);
 
-app.get("/users/:id", async function (req: Request, res: Response) {
-  const results = await AppDataSource.getRepository(User).findOneBy({
-    id: Number(req.params.id),
-  });
-  return res.send(results);
-});
+app.get("/users/:id", UserController.show);
 
-app.post("/users", async function (req: Request, res: Response) {
-  let user = new User();
-  user.firstName = req.body.firstName;
-  user.lastName = req.body.lastName;
-  user.age = req.body.age;
-
-  const errors = await validate(user, { validationError: { target: false } });
-  if (errors.length > 0) {
-    return res.status(422).send(errors);
-  }
-
-  const result = await AppDataSource.manager.save(user);
-  return res.send(result);
-  // const user = await AppDataSource.getRepository(User).create(req.body);
-  // const results = await AppDataSource.getRepository(User).save(user);
-});
+app.post("/users", UserController.store);
 
 app.put("/users/:id", async function (req: Request, res: Response) {
   const user = await AppDataSource.getRepository(User).findOneBy({
