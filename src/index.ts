@@ -2,6 +2,8 @@ import { AppDataSource } from "./data-source";
 import { User } from "./entity/User";
 import * as express from "express";
 import { Request, Response } from "express";
+import { validate } from "class-validator";
+import UserController from "./controller/UserController";
 
 AppDataSource.initialize()
   .then(() => {
@@ -24,10 +26,9 @@ app.get("/", function (req: Request, res: Response) {
 });
 
 // register routes
-app.get("/users", async function (req: Request, res: Response) {
-  const users = await AppDataSource.getRepository(User).find();
-  res.json(users);
-});
+
+// users.index
+app.get("/users", UserController.index);
 
 app.get("/users/:id", async function (req: Request, res: Response) {
   const results = await AppDataSource.getRepository(User).findOneBy({
@@ -37,9 +38,20 @@ app.get("/users/:id", async function (req: Request, res: Response) {
 });
 
 app.post("/users", async function (req: Request, res: Response) {
-  const user = await AppDataSource.getRepository(User).create(req.body);
-  const results = await AppDataSource.getRepository(User).save(user);
-  return res.send(results);
+  let user = new User();
+  user.firstName = req.body.firstName;
+  user.lastName = req.body.lastName;
+  user.age = req.body.age;
+
+  const errors = await validate(user, { validationError: { target: false } });
+  if (errors.length > 0) {
+    return res.status(422).send(errors);
+  }
+
+  const result = await AppDataSource.manager.save(user);
+  return res.send(result);
+  // const user = await AppDataSource.getRepository(User).create(req.body);
+  // const results = await AppDataSource.getRepository(User).save(user);
 });
 
 app.put("/users/:id", async function (req: Request, res: Response) {

@@ -1,18 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { IsDefined, IsInt, Length } from "class-validator";
 
 @Entity()
 export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column()
+  @IsDefined()
+  @Length(1, 255)
+  firstName: string;
 
-    @Column()
-    firstName: string
+  @Column()
+  @IsDefined()
+  @Length(1, 255)
+  lastName: string;
 
-    @Column()
-    lastName: string
-
-    @Column()
-    age: number
-
+  @Column()
+  @IsDefined()
+  @IsInt()
+  age: number;
 }
