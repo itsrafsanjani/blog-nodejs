@@ -3,6 +3,7 @@ import { User } from "./entity/User";
 import * as express from "express";
 import { Request, Response } from "express";
 import UserController from "./controller/UserController";
+import HomeController from "./controller/HomeController";
 
 AppDataSource.initialize()
   .then(() => {
@@ -17,24 +18,14 @@ const app = express();
 app.use(express.json());
 const port = process.env.APP_PORT ?? 3000;
 
-// register routes
-app.get("/", function (req: Request, res: Response) {
-  return res.send({
-    message: "Welcome to Blog NodeJS!",
-  });
-});
+// home route
+app.get("/", HomeController.index);
 
-// register routes
-
-// users.index
+// users routes
 app.get("/users", UserController.index);
-
 app.get("/users/:id", UserController.show);
-
 app.post("/users", UserController.store);
-
 app.put("/users/:id", UserController.update);
-
 app.delete("/users/:id", UserController.destroy);
 
 // start express server
