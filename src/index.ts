@@ -2,6 +2,7 @@ import { AppDataSource } from "./data-source";
 import * as express from "express";
 import UserController from "./controller/UserController";
 import HomeController from "./controller/HomeController";
+import AuthController from "./controller/AuthController";
 
 AppDataSource.initialize()
   .then(() => {
@@ -18,6 +19,9 @@ const port = process.env.APP_PORT ?? 3000;
 
 // home route
 app.get("/", HomeController.index);
+
+// auth routes
+app.post("/register", AuthController.register);
 
 // users routes
 app.get("/users", UserController.index);
