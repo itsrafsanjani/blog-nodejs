@@ -1,7 +1,5 @@
 import { AppDataSource } from "./data-source";
-import { User } from "./entity/User";
 import * as express from "express";
-import { Request, Response } from "express";
 import UserController from "./controller/UserController";
 import HomeController from "./controller/HomeController";
 

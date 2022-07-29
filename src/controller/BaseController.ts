@@ -24,4 +24,16 @@ export class BaseController {
       data,
     });
   };
+
+  responseWithError = async (
+    res: Response,
+    message: string = "",
+    data?: Object,
+    statusCode: number = 404
+  ) => {
+    return res.status(statusCode).json({
+      message,
+      data,
+    });
+  };
 }
