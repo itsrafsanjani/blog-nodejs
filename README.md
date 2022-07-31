@@ -10,6 +10,7 @@ Steps to run this project:
 
 ## TODO
 
+- Add TypeORM Custom Validation
 - Authentication using JWT
 - Send email verification notification with queue
 - Post (Blog) CRUD with file upload
