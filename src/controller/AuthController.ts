@@ -17,13 +17,27 @@ export class AuthController extends BaseController {
       return this.responseWithError(res, "Validation error", errors, 422);
     }
 
-    const result = await AppDataSource.getRepository(User).save(user);
-
-    return this.singleResponseWithSuccess(
-      res,
-      "Registration successful.",
-      result
-    );
+    await AppDataSource.getRepository(User)
+      .save(user)
+      .then((result) => {
+        return this.singleResponseWithSuccess(
+          res,
+          "Registration successful.",
+          result
+        );
+      })
+      .catch((error) => {
+        return this.responseWithError(res, "Validation error", [
+          {
+            value: "",
+            property: "email",
+            children: [],
+            constraints: {
+              isUnique: "email is already used",
+            },
+          },
+        ]);
+      });
   };
 }
 

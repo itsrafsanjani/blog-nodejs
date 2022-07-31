@@ -17,7 +17,6 @@ export class User {
   @IsNotEmpty()
   @MaxLength(255)
   @IsEmail()
-  @IsUnique()
   email: string;
 
   @Column()
