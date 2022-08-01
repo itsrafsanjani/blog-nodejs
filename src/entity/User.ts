@@ -5,6 +5,7 @@ import {
   IsInt,
   IsNotEmpty,
   MaxLength,
+  MinLength,
 } from "class-validator";
 
 @Entity()
@@ -18,6 +19,13 @@ export class User {
   @MaxLength(255)
   @IsEmail()
   email: string;
+
+  @Column()
+  @IsDefined()
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(255)
+  password: string;
 
   @Column()
   @IsDefined()
