@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
 import { BaseController } from "./BaseController";
-import { hash } from "bcryptjs";
+import { compare, hash } from "bcryptjs";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -46,6 +46,35 @@ export class AuthController extends BaseController {
           },
         ]);
       });
+  };
+
+  login = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const user = await AppDataSource.getRepository(User).findOneBy({
+      email: email,
+    });
+
+    if (!(email && password)) {
+      return this.responseWithError(
+        res,
+        "Email and Password required",
+        [],
+        422
+      );
+    }
+
+    if (!user) {
+      return this.responseWithError(res, "Credential does not match", [], 401);
+    }
+
+    if (await compare(password, user.password)) {
+      return this.singleResponseWithSuccess(res, "Login successful.", {
+        token: "successfully logged in",
+      });
+    }
+
+    return this.responseWithError(res, "Credential does not match", [], 401);
   };
 }
 

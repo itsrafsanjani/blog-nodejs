@@ -22,6 +22,7 @@ app.get("/", HomeController.index);
 
 // auth routes
 app.post("/register", AuthController.register);
+app.post("/login", AuthController.login);
 
 // users routes
 app.get("/users", UserController.index);
