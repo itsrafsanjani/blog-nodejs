@@ -1,7 +1,5 @@
 # NodeJS Blog with TypeORM
 
-### Don't try to use NodeJS with TypeScript at home without any starter or framework!
-
 Steps to run this project:
 
 - Run `npm install` command
