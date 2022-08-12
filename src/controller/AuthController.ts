@@ -53,8 +53,9 @@ export class AuthController extends BaseController {
   login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const user = await AppDataSource.getRepository(User).findOneBy({
-      email: email,
+    const attemptedUser = await AppDataSource.getRepository(User).findOne({
+      select: ["id", "email", "password"],
+      where: { email: email },
     });
 
     if (!(email && password)) {
@@ -66,11 +67,14 @@ export class AuthController extends BaseController {
       );
     }
 
-    if (!user) {
+    if (!attemptedUser) {
       return this.responseWithError(res, "Credential does not match", [], 401);
     }
 
-    if (await compare(password, user.password)) {
+    if (await compare(password, attemptedUser.password)) {
+      const user = await AppDataSource.getRepository(User).findOneBy({
+        id: Number(attemptedUser.id),
+      });
       // Sign JWT, valid for 1 hour
       const token = sign(
         { userId: user.id, firstName: user.firstName, lastName: user.lastName },
@@ -80,6 +84,8 @@ export class AuthController extends BaseController {
 
       return this.singleResponseWithSuccess(res, "Login successful.", {
         token: token,
+        token_type: "Bearer",
+        user: user,
       });
     }
 

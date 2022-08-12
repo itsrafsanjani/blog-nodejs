@@ -20,7 +20,7 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   @IsDefined()
   @IsNotEmpty()
   @MinLength(8)
