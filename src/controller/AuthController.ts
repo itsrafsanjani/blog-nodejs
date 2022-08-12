@@ -4,6 +4,8 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
 import { BaseController } from "./BaseController";
 import { compare, hash } from "bcryptjs";
+import { sign } from "jsonwebtoken";
+import config from "../config/app";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -69,8 +71,15 @@ export class AuthController extends BaseController {
     }
 
     if (await compare(password, user.password)) {
+      // Sign JWT, valid for 1 hour
+      const token = sign(
+        { userId: user.id, firstName: user.firstName, lastName: user.lastName },
+        config.jwtSecret,
+        { expiresIn: Number(config.jwtExpiresIn) }
+      );
+
       return this.singleResponseWithSuccess(res, "Login successful.", {
-        token: "successfully logged in",
+        token: token,
       });
     }
 

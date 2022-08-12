@@ -14,6 +14,7 @@
    },
    "dependencies": {
       "@types/bcryptjs": "^2.4.2",
+      "@types/jsonwebtoken": "^8.5.8",
       "bcryptjs": "^2.4.3",
       "class-validator": "^0.13.2",
       "dotenv": "^16.0.1",
@@ -27,6 +28,7 @@
    },
    "scripts": {
       "start": "nodemon src/index.ts",
+      "jwt:secret": "ts-node src/commands/JwtSecretGenerate.ts",
       "typeorm": "typeorm-ts-node-commonjs"
    }
 }

@@ -6,6 +6,7 @@ Steps to run this project:
 - Create a `mysql` database
 - Copy `.env.example` to `.env` using `cp .env.example .env`
 - Update database credentials in `.env`
+- Run `npm run jwt:secret`
 - Run `npm start` command
 
 ## TODO
