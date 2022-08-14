@@ -7,6 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
+import { IsUniq } from "../helpers/IsUniq";
 
 @Entity()
 export class User {
@@ -14,6 +15,7 @@ export class User {
   id: number;
 
   @Column({ unique: true })
+  @IsUniq()
   @IsDefined()
   @IsNotEmpty()
   @MaxLength(255)

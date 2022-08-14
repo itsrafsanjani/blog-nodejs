@@ -36,17 +36,8 @@ export class AuthController extends BaseController {
           result
         );
       })
-      .catch((error) => {
-        return this.responseWithError(res, "Validation error", [
-          {
-            value: "",
-            property: "email",
-            children: [],
-            constraints: {
-              isUnique: "email is already used",
-            },
-          },
-        ]);
+      .catch((errors) => {
+        return this.responseWithError(res, "Unexpected error", errors);
       });
   };
 
