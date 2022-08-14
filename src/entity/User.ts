@@ -7,7 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
-import { IsUniq } from "../helpers/IsUniq";
+import { IsUniq } from "../validation/IsUniq";
 
 @Entity()
 export class User {
