@@ -11,10 +11,10 @@ Steps to run this project:
 
 ## TODO
 
-- Add TypeORM Custom Validation
-- Authentication using JWT
-- Send email verification notification with queue
-- Post (Blog) CRUD with file upload
-- Host to Digital Ocean
-- Frontend with NuxtJS
-- Switch from PHP to Node! 😂 :alien:
+- [x] Authentication using JWT
+- [ ] Add TypeORM Custom Validation
+- [ ] Send email verification notification
+- [ ] Post (Blog) CRUD with file upload
+- [ ] Host to Digital Ocean
+- [ ] Frontend with NuxtJS
+- [ ] Switch from PHP to Node! 😂 :alien:
