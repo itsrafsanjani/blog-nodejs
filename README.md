@@ -12,7 +12,7 @@ Steps to run this project:
 ## TODO
 
 - [x] Authentication using JWT
-- [ ] Add TypeORM Custom Validation
+- [x] Add TypeORM Custom Validation
 - [ ] Send email verification notification
 - [ ] Post (Blog) CRUD with file upload
 - [ ] Host to Digital Ocean
