@@ -1,5 +1,4 @@
 import * as nodemailer from "nodemailer";
-import "dotenv/config";
 
 const host = process.env.MAIL_HOST ? process.env.MAIL_HOST : "localhost";
 const port = Number(process.env.MAIL_PORT)
@@ -28,17 +27,42 @@ transporter.verify(function (error, success) {
   }
 });
 
-const mailOptions = {
-  from: "youremail@gmail.com",
-  to: "myfriend@yahoo.com",
-  subject: "Sending Email using Node.js",
-  text: "That was easy!",
+// const mailOptions = {
+//   from: "youremail@gmail.com",
+//   to: "myfriend@yahoo.com",
+//   subject: "Sending Email using Node.js",
+//   text: "That was easy!",
+// };
+
+// transporter.sendMail(mailOptions, function (error, info) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log("Email sent: " + info.response);
+//   }
+// });
+
+const sendEmail = (
+  to: string = process.env.MAIL_FROM,
+  from: string = process.env.MAIL_FROM,
+  subject: string = "Email from " + process.env.APP_NAME,
+  text: string = "Message from " + process.env.APP_NAME
+) => {
+  transporter.sendMail(
+    {
+      to,
+      from,
+      subject,
+      text,
+    },
+    function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    }
+  );
 };
 
-transporter.sendMail(mailOptions, function (error, info) {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log("Email sent: " + info.response);
-  }
-});
+export default sendEmail;

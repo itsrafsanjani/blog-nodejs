@@ -6,6 +6,7 @@ import { BaseController } from "./BaseController";
 import { compare, hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import config from "../config/app";
+import sendMail from "../services/mail";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -30,6 +31,7 @@ export class AuthController extends BaseController {
     await AppDataSource.getRepository(User)
       .save(user)
       .then((result) => {
+        sendMail(user.email);
         return this.singleResponseWithSuccess(
           res,
           "Registration successful.",
