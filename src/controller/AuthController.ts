@@ -7,7 +7,8 @@ import { compare, hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import config from "../config/app";
 import sendMail from "../services/mail";
-import { getOtp, otpValidate, totp } from "../services/Otp";
+import { getOtp, validateOtp } from "../services/Otp";
+import { removeObjectProperties } from "../helpers/global";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -19,6 +20,10 @@ export class AuthController extends BaseController {
     user.age = age;
     user.password = password;
 
+    // generate otp and save to user table
+    let otp = getOtp();
+    user.otp = otp;
+
     const errors = await validate(user, {
       validationError: { target: false },
     });
@@ -28,8 +33,6 @@ export class AuthController extends BaseController {
     }
 
     user.password = await hash(password, 10);
-
-    let otp = getOtp();
 
     await AppDataSource.getRepository(User)
       .save(user)
@@ -43,6 +46,9 @@ export class AuthController extends BaseController {
           This code will be valid for 5 minutes.
           `,
         });
+
+        removeObjectProperties(result, ["password", "otp"]);
+
         return this.singleResponseWithSuccess(
           res,
           "Registration successful.",
@@ -55,34 +61,74 @@ export class AuthController extends BaseController {
   };
 
   verify = async (req: Request, res: Response) => {
-    const { otp } = req.body;
+    const otp = Number(req.body.otp);
 
-    // if (isEmpty(otp)) {
-    //   return this.responseWithError(res, "Token required", [], 404);
-    // }
+    if (isEmpty(otp)) {
+      return this.responseWithError(res, "Otp required", [], 422);
+    }
 
-    let user = await AppDataSource.getRepository(User).findOneBy({
-      id: Number(req.params.id),
+    let user = await AppDataSource.getRepository(User).findOne({
+      select: ["id", "emailVerifiedAt", "otp"],
+      where: { id: Number(req.params.id) },
     });
+
     if (!user) {
       return this.responseWithError(res, "User not found", [], 404);
     }
-    return this.singleResponseWithSuccess(
-      res,
-      "message",
-      [
-        totp.validate({
-          token: otp,
-        }),
-      ],
-      200
-    );
 
-    // if (validated) {
-    //   user.emailVerifiedAt = new Date();
-    //   const results = await AppDataSource.getRepository(User).save(user);
-    //   return res.send(results);
-    // }
+    if (user.emailVerifiedAt) {
+      return this.singleResponseWithSuccess(
+        res,
+        "User email already verified",
+        [],
+        200
+      );
+    }
+
+    // if user email is not verified and
+    // otp column is empty then
+    // send otp again and save to db
+    if (!user.otp) {
+      let otp = getOtp();
+      sendMail({
+        to: user.email,
+        subject: "Email Verification",
+        text: `
+          Use this code for verification.
+          ${otp}
+          This code will be valid for 5 minutes.
+          `,
+      });
+
+      user.otp = otp;
+      await AppDataSource.getRepository(User).save(user);
+
+      return this.singleResponseWithSuccess(
+        res,
+        "OTP sent again successfully",
+        [],
+        200
+      );
+    }
+
+    const result = validateOtp({
+      otp,
+      dbOtp: user.otp,
+    });
+
+    if (result) {
+      user.emailVerifiedAt = new Date();
+      user.otp = null;
+      await AppDataSource.getRepository(User).save(user);
+      return this.singleResponseWithSuccess(
+        res,
+        "Email verified successfully",
+        [],
+        200
+      );
+    }
+
+    return this.responseWithError(res, "OTP does not match", [], 401);
   };
 
   login = async (req: Request, res: Response) => {

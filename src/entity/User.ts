@@ -38,6 +38,13 @@ export class User {
   @IsOptional()
   emailVerifiedAt!: Date;
 
+  @Column({
+    nullable: true,
+    select: false,
+  })
+  @IsOptional()
+  otp!: number;
+
   @Column({ select: false })
   @IsDefined()
   @IsNotEmpty()
