@@ -42,18 +42,23 @@ transporter.verify(function (error, success) {
 //   }
 // });
 
-const sendEmail = (
-  to: string = process.env.MAIL_FROM,
-  from: string = process.env.MAIL_FROM,
-  subject: string = "Email from " + process.env.APP_NAME,
-  text: string = "Message from " + process.env.APP_NAME
-) => {
+const sendEmail = ({
+  to,
+  from,
+  subject,
+  text,
+}: {
+  to: string;
+  from?: string;
+  subject?: string;
+  text?: string;
+}) => {
   transporter.sendMail(
     {
       to,
-      from,
-      subject,
-      text,
+      from: from ?? process.env.MAIL_FROM,
+      subject: subject ?? "Email from " + process.env.APP_NAME,
+      text: text ?? "Message from " + process.env.APP_NAME,
     },
     function (error, info) {
       if (error) {

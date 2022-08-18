@@ -7,6 +7,7 @@ import { compare, hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import config from "../config/app";
 import sendMail from "../services/mail";
+import { getOtp } from "../services/Otp";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -28,10 +29,20 @@ export class AuthController extends BaseController {
 
     user.password = await hash(password, 10);
 
+    let otp = getOtp();
+
     await AppDataSource.getRepository(User)
       .save(user)
       .then((result) => {
-        sendMail(user.email);
+        sendMail({
+          to: user.email,
+          subject: "Email Verification",
+          text: `
+          Use this code for verification.
+          ${otp}
+          This code will be valid for 5 minutes.
+          `,
+        });
         return this.singleResponseWithSuccess(
           res,
           "Registration successful.",
