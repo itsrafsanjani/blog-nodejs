@@ -14,7 +14,7 @@ Steps to run this project:
 
 - [x] Authentication using JWT
 - [x] Add TypeORM Custom Validation
-- [ ] Send email verification notification
+- [x] Send email verification notification with OTP
 - [ ] Post (Blog) CRUD with file upload
 - [ ] Host to Digital Ocean
 - [ ] Frontend with NuxtJS
