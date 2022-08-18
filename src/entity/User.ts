@@ -1,9 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Timestamp,
+  IsNull,
+} from "typeorm";
+import {
+  IsDateString,
   IsDefined,
   IsEmail,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   MaxLength,
   MinLength,
 } from "class-validator";
@@ -21,6 +29,14 @@ export class User {
   @MaxLength(255)
   @IsEmail()
   email: string;
+
+  @Column({
+    type: "timestamp",
+    nullable: true,
+  })
+  @IsDateString()
+  @IsOptional()
+  emailVerifiedAt!: Date;
 
   @Column({ select: false })
   @IsDefined()

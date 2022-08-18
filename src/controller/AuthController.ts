@@ -1,4 +1,4 @@
-import { validate } from "class-validator";
+import { isEmpty, validate } from "class-validator";
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
@@ -7,7 +7,7 @@ import { compare, hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import config from "../config/app";
 import sendMail from "../services/mail";
-import { getOtp } from "../services/Otp";
+import { getOtp, otpValidate, totp } from "../services/Otp";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -52,6 +52,37 @@ export class AuthController extends BaseController {
       .catch((errors) => {
         return this.responseWithError(res, "Unexpected error", errors);
       });
+  };
+
+  verify = async (req: Request, res: Response) => {
+    const { otp } = req.body;
+
+    // if (isEmpty(otp)) {
+    //   return this.responseWithError(res, "Token required", [], 404);
+    // }
+
+    let user = await AppDataSource.getRepository(User).findOneBy({
+      id: Number(req.params.id),
+    });
+    if (!user) {
+      return this.responseWithError(res, "User not found", [], 404);
+    }
+    return this.singleResponseWithSuccess(
+      res,
+      "message",
+      [
+        totp.validate({
+          token: otp,
+        }),
+      ],
+      200
+    );
+
+    // if (validated) {
+    //   user.emailVerifiedAt = new Date();
+    //   const results = await AppDataSource.getRepository(User).save(user);
+    //   return res.send(results);
+    // }
   };
 
   login = async (req: Request, res: Response) => {

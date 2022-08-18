@@ -11,6 +11,7 @@ routes.get("/", HomeController.index);
 // auth routes
 routes.post("/register", AuthController.register);
 routes.post("/login", AuthController.login);
+routes.post("/verify/:id", AuthController.verify);
 
 // users routes
 routes.get("/users", UserController.index);

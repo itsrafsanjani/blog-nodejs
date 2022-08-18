@@ -17,11 +17,11 @@ const getOtp = () => {
 console.log(getOtp);
 
 // // Validate a token.
-const validate = ({ token }: { token: string }) =>
+const otpValidate = (token) =>
   totp.validate({
     token: token,
     window: 1,
   });
-console.log(validate);
+console.log(otpValidate);
 
-export { getOtp, validate };
+export { getOtp, otpValidate, totp };
