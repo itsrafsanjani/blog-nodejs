@@ -13,7 +13,7 @@ AppDataSource.initialize()
     app.use(express.json());
     const port = process.env.APP_PORT ?? 3000;
 
-    app.use("/", routes);
+    app.use("/", routes.export());
 
     // start express server
     app.listen(port);

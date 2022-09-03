@@ -4,7 +4,7 @@ export class BaseController {
   singleResponseWithSuccess = async (
     res: Response,
     message: string = "",
-    data?: Object,
+    data: Object = {},
     statusCode: number = 200
   ) => {
     return res.status(statusCode).json({
@@ -16,7 +16,7 @@ export class BaseController {
   multipleResponseWithSuccess = async (
     res: Response,
     message: string = "",
-    data?: string[],
+    data: Object[] = [],
     statusCode: number = 200
   ) => {
     return res.status(statusCode).json({
@@ -28,7 +28,7 @@ export class BaseController {
   responseWithError = async (
     res: Response,
     message: string = "",
-    data?: Object,
+    data: Object = {},
     statusCode: number = 404
   ) => {
     return res.status(statusCode).json({
