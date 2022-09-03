@@ -1,6 +1,6 @@
 import { AppDataSource } from "./data-source";
 import * as express from "express";
-import routes from "./routes";
+import routes from "./routes/api";
 import * as cors from "cors";
 
 AppDataSource.initialize()
@@ -13,7 +13,7 @@ AppDataSource.initialize()
     app.use(express.json());
     const port = process.env.APP_PORT ?? 3000;
 
-    app.use("/", routes.export());
+    app.use("/api", routes);
 
     // start express server
     app.listen(port);

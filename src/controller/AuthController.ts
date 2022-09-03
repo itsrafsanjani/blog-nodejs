@@ -172,6 +172,23 @@ export class AuthController extends BaseController {
 
     return this.responseWithError(res, "Credential does not match", [], 401);
   };
+
+  user = async (req: Request, res: Response) => {
+    await AppDataSource.getRepository(User)
+      .findOneBy({
+        id: Number(res.locals.user.userId),
+      })
+      .then((user) => {
+        this.singleResponseWithSuccess(
+          res,
+          "Authenticated user retrieved successfully",
+          user
+        );
+      })
+      .catch((errors) => {
+        return this.responseWithError(res, "Unexpected error", errors);
+      });
+  };
 }
 
 export default new AuthController();
