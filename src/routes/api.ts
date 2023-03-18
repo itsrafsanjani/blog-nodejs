@@ -3,6 +3,7 @@ import UserController from "../controller/UserController";
 import HomeController from "../controller/HomeController";
 import AuthController from "../controller/AuthController";
 import auth from "../middleware/auth";
+import PostController from "../controller/PostController";
 
 const routes = Router();
 
@@ -22,5 +23,12 @@ routes.get("/users/:id", UserController.show);
 routes.post("/users", UserController.store);
 routes.put("/users/:id", UserController.update);
 routes.delete("/users/:id", UserController.destroy);
+
+// posts routes
+routes.get("/posts", PostController.index);
+routes.get("/posts/:id", PostController.show);
+routes.post("/posts", PostController.store);
+routes.put("/posts/:id", PostController.update);
+routes.delete("/posts/:id", PostController.destroy);
 
 export default routes;
