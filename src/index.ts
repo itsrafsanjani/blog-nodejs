@@ -1,5 +1,7 @@
 import { AppDataSource } from "./data-source";
 import * as express from "express";
+import * as bodyParser from "body-parser";
+
 import routes from "./routes/api";
 import * as cors from "cors";
 
@@ -9,8 +11,12 @@ AppDataSource.initialize()
 
     // create and setup express app
     const app = express();
+
     app.use(cors());
-    app.use(express.json());
+
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
+
     const port = process.env.APP_PORT ?? 3000;
 
     app.use("/api", routes);

@@ -33,18 +33,22 @@ export class PostController extends BaseController {
       });
   };
   store = async (req: Request, res: Response) => {
-    const { title, description, thumbnail, publishedAt } = req.body;
+    const { title, description, publishedAt } = req.body;
+
+    const { filename } = req.file;
 
     const post = new Post();
 
     Object.assign(post, {
       title,
       description,
-      thumbnail,
+      thumbnail: "storage/" + filename,
       publishedAt,
     });
 
-    const errors = await validate(post, { validationError: { target: false } });
+    const errors = await validate(post, {
+      validationError: { target: false },
+    });
     if (errors.length > 0) {
       return res.status(422).send(errors);
     }

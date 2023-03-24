@@ -2,7 +2,12 @@
    "name": "blog-nodejs",
    "version": "0.0.1",
    "description": "NodeJS Blog with TypeORM.",
-   "type": "commonjs",
+   "scripts": {
+      "start": "nodemon src/index.ts",
+      "app:key": "ts-node src/commands/AppKeyGenerate.ts",
+      "jwt:secret": "ts-node src/commands/JwtSecretGenerate.ts",
+      "typeorm": "typeorm-ts-node-commonjs"
+   },
    "devDependencies": {
       "@types/express": "^4.17.13",
       "@types/node": "^16.11.10",
@@ -16,8 +21,11 @@
       "@types/bcryptjs": "^2.4.2",
       "@types/cors": "^2.8.12",
       "@types/jsonwebtoken": "^8.5.8",
+      "@types/multer": "^1.4.7",
       "@types/nodemailer": "^6.4.5",
+      "@types/uuid": "^9.0.1",
       "bcryptjs": "^2.4.3",
+      "body-parser": "^1.20.2",
       "class-validator": "^0.14.0",
       "cors": "^2.8.5",
       "dotenv": "^16.0.1",
@@ -28,12 +36,7 @@
       "nodemailer": "^6.7.7",
       "nodemon": "^2.0.19",
       "reflect-metadata": "^0.1.13",
-      "typeorm": "0.3.6"
-   },
-   "scripts": {
-      "start": "nodemon src/index.ts",
-      "app:key": "ts-node src/commands/AppKeyGenerate.ts",
-      "jwt:secret": "ts-node src/commands/JwtSecretGenerate.ts",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "typeorm": "0.3.6",
+      "uuid": "^9.0.0"
    }
 }
