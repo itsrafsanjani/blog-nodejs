@@ -7,7 +7,7 @@ import { compare, hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import config from "../config/app";
 import sendMail from "../services/mail";
-import { getOtp, validateOtp } from "../services/Otp";
+import { getOtp, validateOtp } from "../services/otp";
 import { removeObjectProperties } from "../helpers/global";
 
 export class AuthController extends BaseController {
