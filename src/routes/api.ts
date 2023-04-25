@@ -46,7 +46,7 @@ routes.delete("/users/:id", UserController.destroy);
 routes.get("/posts", PostController.index);
 routes.get("/posts/:id", PostController.show);
 routes.post("/posts", upload.single("thumbnail"), PostController.store);
-routes.put("/posts/:id", PostController.update);
+routes.put("/posts/:id", upload.single("thumbnail"), PostController.update);
 routes.delete("/posts/:id", PostController.destroy);
 
 export default routes;

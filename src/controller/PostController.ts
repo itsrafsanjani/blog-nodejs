@@ -12,7 +12,7 @@ export class PostController extends BaseController {
     return this.multipleResponseWithSuccess(
       res,
       "Posts retrieved successfully",
-      PostCollection.getAttributes(posts),
+      PostCollection(posts),
       200
     );
   };
@@ -26,7 +26,7 @@ export class PostController extends BaseController {
           ? this.singleResponseWithSuccess(
               res,
               "Post retrieved successfully",
-              PostResource.getAttributes(post)
+              PostResource(post)
             )
           : this.responseWithError(res, "Post not found");
       })
@@ -57,11 +57,11 @@ export class PostController extends BaseController {
 
     await AppDataSource.getRepository(Post)
       .save(post)
-      .then((result) => {
+      .then((createdPost) => {
         return this.singleResponseWithSuccess(
           res,
           "Post stored successfully",
-          result
+          PostResource(createdPost)
         );
       })
       .catch((errors) => {
@@ -73,12 +73,19 @@ export class PostController extends BaseController {
       id: Number(req.params.id),
     });
 
-    const { title, description, thumbnail, publishedAt } = req.body;
+    const { title, description, publishedAt } = req.body;
+
+    const filename = req.file?.filename;
+
+    if (filename) {
+      Object.assign(post, {
+        thumbnail: "uploads/" + filename,
+      });
+    }
 
     Object.assign(post, {
       title,
       description,
-      thumbnail,
       publishedAt,
     });
 
@@ -90,11 +97,11 @@ export class PostController extends BaseController {
     AppDataSource.getRepository(Post).merge(post, req.body);
     await AppDataSource.getRepository(Post)
       .save(post)
-      .then((result) => {
+      .then((updatedPost) => {
         return this.singleResponseWithSuccess(
           res,
           "Post updated successfully",
-          result
+          PostResource(updatedPost)
         );
       })
       .catch((errors) => {
@@ -104,8 +111,8 @@ export class PostController extends BaseController {
   destroy = async (req: Request, res: Response) => {
     await AppDataSource.getRepository(Post)
       .delete(req.params.id)
-      .then((result) => {
-        result.affected
+      .then((post) => {
+        post.affected
           ? this.singleResponseWithSuccess(res, "Post deleted successfully")
           : this.responseWithError(res, "Post not found");
       })
