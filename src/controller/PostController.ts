@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Post } from "../entity/Post";
 import { BaseController } from "./BaseController";
+import PostCollection from "../resources/PostCollection";
+import PostResource from "../resources/PostResource";
 
 export class PostController extends BaseController {
   index = async (req: Request, res: Response) => {
@@ -10,7 +12,7 @@ export class PostController extends BaseController {
     return this.multipleResponseWithSuccess(
       res,
       "Posts retrieved successfully",
-      posts,
+      PostCollection.getAttributes(posts),
       200
     );
   };
@@ -19,12 +21,12 @@ export class PostController extends BaseController {
       .findOneBy({
         id: Number(req.params.id),
       })
-      .then((result) => {
-        result
+      .then((post) => {
+        post
           ? this.singleResponseWithSuccess(
               res,
               "Post retrieved successfully",
-              result
+              PostResource.getAttributes(post)
             )
           : this.responseWithError(res, "Post not found");
       })
@@ -42,7 +44,7 @@ export class PostController extends BaseController {
     Object.assign(post, {
       title,
       description,
-      thumbnail: "storage/" + filename,
+      thumbnail: "uploads/" + filename,
       publishedAt,
     });
 

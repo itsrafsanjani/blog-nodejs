@@ -12,6 +12,9 @@ AppDataSource.initialize()
     // create and setup express app
     const app = express();
 
+    // Serve the public directory as a static directory
+    app.use(express.static("public"));
+
     app.use(cors());
 
     app.use(bodyParser.urlencoded({ extended: true }));
