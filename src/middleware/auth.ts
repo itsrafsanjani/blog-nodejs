@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
-import config from "../config/app";
 import { AppDataSource } from "../data-source";
 import { PersonalAccessToken } from "../entity/PersonalAccessToken";
-import { User } from "../entity/User";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.headers.authorization;
