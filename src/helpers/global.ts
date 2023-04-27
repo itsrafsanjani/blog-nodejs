@@ -40,3 +40,4 @@ const generateRandomString = (length: number): string => {
 };
 
 export { removeObjectProperties, url, asset, generateRandomString };
+

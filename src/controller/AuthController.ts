@@ -1,15 +1,14 @@
+import { compare, hash } from "bcryptjs";
 import { isEmpty, validate } from "class-validator";
 import { Request, Response } from "express";
+import * as useragent from "useragent";
 import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
-import { BaseController } from "./BaseController";
-import { compare, hash } from "bcryptjs";
-import { sign } from "jsonwebtoken";
-import config from "../config/app";
-import sendMail from "../services/mail";
-import { getOtp, validateOtp } from "../services/otp";
 import { removeObjectProperties } from "../helpers/global";
 import PersonalAccessTokenService from "../services/PersonalAccessTokenService";
+import sendMail from "../services/mail";
+import { getOtp, validateOtp } from "../services/otp";
+import { BaseController } from "./BaseController";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -158,10 +157,13 @@ export class AuthController extends BaseController {
         id: Number(attemptedUser.id),
       });
 
+      const clientIp = req.ip;
+      const userAgent = useragent.parse(req.headers["user-agent"]);
+
       // generate a personal access token
       const personalAccessToken = await PersonalAccessTokenService.createToken(
         user,
-        "Windows 10"
+        `${userAgent.toString()} (IP: ${clientIp})`
       );
 
       return this.singleResponseWithSuccess(res, "Login successful.", {
