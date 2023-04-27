@@ -16,6 +16,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       PersonalAccessToken
     ).findOne({
       where: { token: token },
+      relations: ["user"],
     });
 
     if (!personalAccessToken) {

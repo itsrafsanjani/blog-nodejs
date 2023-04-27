@@ -179,7 +179,7 @@ export class AuthController extends BaseController {
   user = async (req: Request, res: Response) => {
     await AppDataSource.getRepository(User)
       .findOneBy({
-        id: Number(res.locals.user.userId),
+        id: Number(res.locals.user.id),
       })
       .then((user) => {
         this.singleResponseWithSuccess(
