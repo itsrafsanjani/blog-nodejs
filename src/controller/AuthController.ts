@@ -4,11 +4,12 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
 import { BaseController } from "./BaseController";
 import { compare, hash } from "bcryptjs";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 import config from "../config/app";
 import sendMail from "../services/mail";
 import { getOtp, validateOtp } from "../services/otp";
 import { removeObjectProperties } from "../helpers/global";
+import { JwtPayload } from "jsonwebtoken";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -156,21 +157,78 @@ export class AuthController extends BaseController {
       const user = await AppDataSource.getRepository(User).findOneBy({
         id: Number(attemptedUser.id),
       });
-      // Sign JWT, valid for 1 hour
-      const token = sign(
+
+      const refreshToken = sign(
+        { userId: user.id, firstName: user.firstName, lastName: user.lastName },
+        config.jwtSecret,
+        { expiresIn: Number(config.refreshJwtExpiresIn) }
+      );
+
+      // TODO: store refresh token to database refreshToken column
+      const hashedRefreshToken = await hash(refreshToken, 10);
+
+      // Save the hashed refresh token to the database
+      user.refreshToken = hashedRefreshToken;
+      await AppDataSource.getRepository(User).save(user);
+
+      const accessToken = sign(
         { userId: user.id, firstName: user.firstName, lastName: user.lastName },
         config.jwtSecret,
         { expiresIn: Number(config.jwtExpiresIn) }
       );
 
       return this.singleResponseWithSuccess(res, "Login successful.", {
-        token: token,
+        access_token: accessToken,
         token_type: "Bearer",
+        refresh_token: refreshToken,
         user: user,
       });
     }
 
     return this.responseWithError(res, "Credential does not match", [], 401);
+  };
+
+  refresh = async (req: Request, res: Response) => {
+    const { refreshToken } = req.body;
+
+    try {
+      const decoded = verify(refreshToken, config.jwtSecret) as JwtPayload;
+      const attemptedUser = await AppDataSource.getRepository(User).findOne({
+        select: ["id", "refreshToken"],
+        where: { id: decoded.userId },
+      });
+
+      if (!attemptedUser) {
+        return this.responseWithError(res, "Invalid refresh token.", [], 401);
+      }
+
+      if (!(await compare(refreshToken, attemptedUser.refreshToken))) {
+        return this.responseWithError(res, "Invalid refresh token.", [], 401);
+      }
+
+      const user = await AppDataSource.getRepository(User).findOneBy({
+        id: Number(attemptedUser.id),
+      });
+
+      const accessToken = sign(
+        { userId: user.id, firstName: user.firstName, lastName: user.lastName },
+        config.jwtSecret,
+        { expiresIn: Number(config.jwtExpiresIn) }
+      );
+
+      return this.singleResponseWithSuccess(res, "Access token refreshed.", {
+        access_token: accessToken,
+        token_type: "Bearer",
+        user: user,
+      });
+    } catch (err) {
+      return this.responseWithError(
+        res,
+        err.message || "Invalid refresh token.",
+        [],
+        401
+      );
+    }
   };
 
   user = async (req: Request, res: Response) => {

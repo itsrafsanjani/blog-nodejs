@@ -63,4 +63,7 @@ export class User {
   @IsNotEmpty()
   @IsInt()
   age: number;
+
+  @Column({ nullable: true, select: false })
+  refreshToken: string;
 }
