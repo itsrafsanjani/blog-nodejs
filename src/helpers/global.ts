@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import appConfig from "../config/app";
 
 /**
@@ -33,4 +34,9 @@ const asset = (path: string) => {
   return url();
 };
 
-export { removeObjectProperties, url, asset };
+const generateRandomString = (length: number): string => {
+  const buffer = randomBytes(Math.ceil(length / 2));
+  return buffer.toString("hex").slice(0, length);
+};
+
+export { removeObjectProperties, url, asset, generateRandomString };

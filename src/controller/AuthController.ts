@@ -9,6 +9,7 @@ import config from "../config/app";
 import sendMail from "../services/mail";
 import { getOtp, validateOtp } from "../services/otp";
 import { removeObjectProperties } from "../helpers/global";
+import PersonalAccessTokenService from "../services/PersonalAccessTokenService";
 
 export class AuthController extends BaseController {
   register = async (req: Request, res: Response) => {
@@ -156,15 +157,15 @@ export class AuthController extends BaseController {
       const user = await AppDataSource.getRepository(User).findOneBy({
         id: Number(attemptedUser.id),
       });
-      // Sign JWT, valid for 1 hour
-      const token = sign(
-        { userId: user.id, firstName: user.firstName, lastName: user.lastName },
-        config.jwtSecret,
-        { expiresIn: Number(config.jwtExpiresIn) }
+
+      // generate a personal access token
+      const personalAccessToken = await PersonalAccessTokenService.createToken(
+        user,
+        "Windows 10"
       );
 
       return this.singleResponseWithSuccess(res, "Login successful.", {
-        token: token,
+        token: personalAccessToken.token,
         token_type: "Bearer",
         user: user,
       });

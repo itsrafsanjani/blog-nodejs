@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import config from "../config/app";
+import { AppDataSource } from "../data-source";
+import { PersonalAccessToken } from "../entity/PersonalAccessToken";
+import { User } from "../entity/User";
 
-const auth = (req: Request, res: Response, next: NextFunction) => {
+const auth = async (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.headers.authorization;
   if (!authorization) {
     return res.status(403).json({
@@ -12,11 +15,23 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
 
   const token = authorization.split(" ")[1];
   try {
-    const decoded = verify(token, config.jwtSecret);
-    res.locals.user = decoded;
+    const personalAccessToken = await AppDataSource.getRepository(
+      PersonalAccessToken
+    ).findOne({
+      where: { token: token },
+    });
+
+    if (!personalAccessToken) {
+      return res.status(401).json({
+        message: "Invalid token.",
+      });
+    }
+
+    res.locals.user = personalAccessToken.user;
   } catch (err) {
+    console.error(err);
     return res.status(401).json({
-      message: "Invalid Token",
+      message: "Invalid token.",
     });
   }
   return next();

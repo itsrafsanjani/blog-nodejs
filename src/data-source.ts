@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { User } from "./entity/User";
 import "dotenv/config";
 import { Post } from "./entity/Post";
+import { PersonalAccessToken } from "./entity/PersonalAccessToken";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME ?? "blog_nodejs",
   synchronize: true,
   logging: false,
-  entities: [User, Post],
+  entities: [User, Post, PersonalAccessToken],
   migrations: [],
   subscribers: [],
 });
