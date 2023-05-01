@@ -5,10 +5,13 @@ import { Post } from "../entity/Post";
 import { BaseController } from "./BaseController";
 import PostCollection from "../resources/PostCollection";
 import PostResource from "../resources/PostResource";
+import { User } from "../entity/User";
 
 export class PostController extends BaseController {
   index = async (req: Request, res: Response) => {
-    const posts = await AppDataSource.getRepository(Post).find();
+    const posts = await AppDataSource.getRepository(Post).find({
+      relations: ["user"],
+    });
     return this.multipleResponseWithSuccess(
       res,
       "Posts retrieved successfully",
@@ -18,8 +21,9 @@ export class PostController extends BaseController {
   };
   show = async (req: Request, res: Response) => {
     await AppDataSource.getRepository(Post)
-      .findOneBy({
-        id: Number(req.params.id),
+      .findOne({
+        where: { id: Number(req.params.id) },
+        relations: ["user"],
       })
       .then((post) => {
         post
@@ -35,6 +39,9 @@ export class PostController extends BaseController {
       });
   };
   store = async (req: Request, res: Response) => {
+    const user = await AppDataSource.getRepository(User).findOne(
+      res.locals.user.id
+    );
     const { title, description, publishedAt } = req.body;
 
     const { filename } = req.file;
@@ -42,6 +49,7 @@ export class PostController extends BaseController {
     const post = new Post();
 
     Object.assign(post, {
+      user,
       title,
       description,
       thumbnail: "uploads/" + filename,
@@ -69,9 +77,18 @@ export class PostController extends BaseController {
       });
   };
   update = async (req: Request, res: Response) => {
-    let post = await AppDataSource.getRepository(Post).findOneBy({
-      id: Number(req.params.id),
+    let post = await AppDataSource.getRepository(Post).findOne({
+      where: { id: Number(req.params.id) },
+      relations: ["user"],
     });
+
+    if (!post) {
+      return this.responseWithError(res, "Post not found");
+    }
+
+    if (post.user.id !== res.locals.user.id) {
+      return this.responseWithError(res, "Unauthorized");
+    }
 
     const { title, description, publishedAt } = req.body;
 

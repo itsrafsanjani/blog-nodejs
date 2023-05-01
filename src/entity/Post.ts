@@ -6,12 +6,16 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { User } from "./User";
 
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ManyToOne(() => User, { onDelete: "CASCADE" })
+  user: User;
 
   @Column({
     length: 255,
@@ -42,4 +46,14 @@ export class Post {
   @IsNotEmpty()
   @IsDateString()
   publishedAt: Date;
+
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  createdAt: Date;
+
+  @Column({
+    type: "datetime",
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
+  updatedAt: Date;
 }

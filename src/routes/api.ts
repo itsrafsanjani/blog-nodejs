@@ -33,7 +33,11 @@ routes.post("/register", AuthController.register);
 routes.post("/login", AuthController.login);
 routes.post("/verify/:id", AuthController.verify);
 
+routes.get("/posts", PostController.index);
+routes.get("/posts/:id", PostController.show);
+
 routes.use(auth);
+
 routes.get("/user", AuthController.user);
 // users routes
 routes.get("/users", UserController.index);
@@ -43,8 +47,6 @@ routes.put("/users/:id", UserController.update);
 routes.delete("/users/:id", UserController.destroy);
 
 // posts routes
-routes.get("/posts", PostController.index);
-routes.get("/posts/:id", PostController.show);
 routes.post("/posts", upload.single("thumbnail"), PostController.store);
 routes.put("/posts/:id", upload.single("thumbnail"), PostController.update);
 routes.delete("/posts/:id", PostController.destroy);
