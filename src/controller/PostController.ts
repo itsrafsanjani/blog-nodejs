@@ -1,4 +1,10 @@
 import { validate } from "class-validator";
+import { JSDOM } from "jsdom";
+import * as DOMPurify from "dompurify";
+
+const window = new JSDOM("").window;
+const purify = DOMPurify(window);
+
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Post } from "../entity/Post";
@@ -6,6 +12,7 @@ import { BaseController } from "./BaseController";
 import PostCollection from "../resources/PostCollection";
 import PostResource from "../resources/PostResource";
 import { User } from "../entity/User";
+import slugify from "slugify";
 
 export class PostController extends BaseController {
   index = async (req: Request, res: Response) => {
@@ -39,20 +46,34 @@ export class PostController extends BaseController {
       });
   };
   store = async (req: Request, res: Response) => {
-    const user = await AppDataSource.getRepository(User).findOne(
-      res.locals.user.id
-    );
-    const { title, description, publishedAt } = req.body;
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { id: res.locals.user.id },
+    });
+    const { title, description, tags, publishedAt } = req.body;
 
     const { filename } = req.file;
 
     const post = new Post();
 
+    const sanitizedDescription = purify.sanitize(description, {
+      ALLOWED_TAGS: [],
+    });
+
+    const excerpt =
+      sanitizedDescription.length > 255
+        ? sanitizedDescription.slice(0, 252) + "..."
+        : sanitizedDescription;
+
+    console.log(excerpt);
+
     Object.assign(post, {
       user,
       title,
-      description,
+      slug: slugify(title, { lower: true }).slice(0, 220) + "-" + Date.now(),
+      excerpt: excerpt.replace(/\n/g, ""),
+      description: purify.sanitize(description),
       thumbnail: "uploads/" + filename,
+      tags,
       publishedAt,
     });
 

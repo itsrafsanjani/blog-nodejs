@@ -26,17 +26,35 @@ export class Post {
   @MaxLength(255)
   title: string;
 
+  @Column({
+    unique: true,
+    length: 255,
+  })
+  @MinLength(3)
+  @MaxLength(255)
+  slug: string;
+
+  @Column({
+    length: 255,
+  })
+  excerpt: string;
+
   @Column("text")
   @IsDefined()
   @IsNotEmpty()
   @MinLength(3)
-  @MaxLength(255)
+  @MaxLength(5000)
   description: string;
 
   @Column()
   @IsDefined()
   @IsNotEmpty()
   thumbnail: string;
+
+  @Column({ type: "simple-array" })
+  @IsDefined()
+  @IsNotEmpty()
+  tags: string[];
 
   @Column("int", { default: 0 })
   views: number;
